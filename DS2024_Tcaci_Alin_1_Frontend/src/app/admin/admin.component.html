@@ -1,0 +1,172 @@
+<div *ngIf="currentUser">
+  <h2>Welcome, {{ currentUser.username }}!</h2>
+
+  <!-- Form to Create New User -->
+  <h2>Create New User</h2>
+  <form [formGroup]="newUserForm" (ngSubmit)="createUser()">
+    <div>
+      <label for="username">Username:</label>
+      <input id="username" formControlName="username" type="text" />
+    </div>
+
+    <div>
+      <label for="password">Password:</label>
+      <input id="password" formControlName="password" type="password" />
+    </div>
+
+    <div>
+      <label for="role">Role:</label>
+      <select id="role" formControlName="role">
+        <option value="ADMIN">ADMIN</option>
+        <option value="CLIENT">CLIENT</option>
+      </select>
+    </div>
+
+    <button type="submit">Create User</button>
+  </form>
+
+<h2>All Users</h2>
+
+<div class="user-table">
+  <div class="user-row header">
+    <div class="user-cell">No.</div>
+    <div class="user-cell">Username</div>
+    <div class="user-cell">Role</div>
+    <div class="user-cell actions">Actions</div>
+  </div>
+
+  <div *ngFor="let user of users; let i = index" class="user-row">
+    <div class="user-cell">{{ i + 1 }}</div>
+
+    <!-- Editable Username -->
+    <div class="user-cell">
+      <ng-container *ngIf="editingUserId === user.id; else displayUsername">
+        <input [(ngModel)]="userEditData.username" type="text" />
+      </ng-container>
+      <ng-template #displayUsername>
+        {{ user.username }}
+      </ng-template>
+    </div>
+
+    <div class="user-cell">{{ user.role }}</div>
+
+    <!-- Actions -->
+    <div class="user-cell actions">
+      <ng-container *ngIf="editingUserId === user.id; else editButtons">
+        <button (click)="saveUser(user)">Save</button>
+        <button (click)="cancelUserEdit()">Cancel</button>
+      </ng-container>
+      <ng-template #editButtons>
+        <button (click)="editUser(user)">Update</button>
+        <button (click)="deleteUser(user.id)">Delete</button>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+  <!-- Form to Create New Device -->
+  <h2>Create New Device</h2>
+  <form [formGroup]="newDeviceForm" (ngSubmit)="createDevice()">
+    <div>
+      <label for="userId">User:</label>
+      <select id="userId" formControlName="userId">
+        <option *ngFor="let user of clientUsers" [value]="user.id">
+          {{ user.username }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label for="description">Description:</label>
+      <input id="description" formControlName="description" type="text" />
+    </div>
+
+    <div>
+      <label for="address">Address:</label>
+      <input id="address" formControlName="address" type="text" />
+    </div>
+
+    <div>
+      <label for="maxEnergyHourly">Max Energy Hourly:</label>
+      <input id="maxEnergyHourly" formControlName="maxEnergyHourly" type="number" min="0" />
+    </div>
+
+    <button type="submit">Create Device</button>
+  </form>
+
+<h2>All Devices</h2>
+
+<div class="device-table">
+  <div class="device-row header">
+    <div class="device-cell">No.</div>
+    <div class="device-cell">Username</div>
+    <div class="device-cell">Description</div>
+    <div class="device-cell">Address</div>
+    <div class="device-cell">Max Energy Hourly</div>
+    <div class="device-cell actions">Actions</div>
+  </div>
+
+  <div *ngFor="let device of devices; let i = index" class="device-row">
+    <div class="device-cell">{{ i + 1 }}</div>
+
+    <!-- Editable Username/UserId -->
+    <div class="device-cell">
+      <ng-container *ngIf="editingDeviceId === device.id; else displayUsername">
+        <select [(ngModel)]="deviceEditData.userId">
+          <option *ngFor="let user of clientUsers" [value]="user.id">
+            {{ user.username }}
+          </option>
+        </select>
+      </ng-container>
+      <ng-template #displayUsername>
+        {{ userIdToUsername.get(device.userId) || 'Unknown User' }}
+      </ng-template>
+    </div>
+
+    <!-- Editable Description -->
+    <div class="device-cell">
+      <ng-container *ngIf="editingDeviceId === device.id; else displayDescription">
+        <input [(ngModel)]="deviceEditData.description" type="text" />
+      </ng-container>
+      <ng-template #displayDescription>
+        {{ device.description }}
+      </ng-template>
+    </div>
+
+    <!-- Editable Address -->
+    <div class="device-cell">
+      <ng-container *ngIf="editingDeviceId === device.id; else displayAddress">
+        <input [(ngModel)]="deviceEditData.address" type="text" />
+      </ng-container>
+      <ng-template #displayAddress>
+        {{ device.address }}
+      </ng-template>
+    </div>
+
+    <!-- Editable Max Energy Hourly -->
+    <div class="device-cell">
+      <ng-container *ngIf="editingDeviceId === device.id; else displayMaxEnergy">
+        <input [(ngModel)]="deviceEditData.maxEnergyHourly" type="number" min="0" />
+      </ng-container>
+      <ng-template #displayMaxEnergy>
+        {{ device.maxEnergyHourly }}
+      </ng-template>
+    </div>
+
+    <!-- Actions -->
+    <div class="device-cell actions">
+      <ng-container *ngIf="editingDeviceId === device.id; else editButtons">
+        <button (click)="saveDevice(device)">Save</button>
+        <button (click)="cancelDeviceEdit()">Cancel</button>
+      </ng-container>
+      <ng-template #editButtons>
+        <button (click)="editDevice(device)">Update</button>
+        <button (click)="deleteDevice(device.id)">Delete</button>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<button (click)="logout()">Logout</button>
+
+</div>

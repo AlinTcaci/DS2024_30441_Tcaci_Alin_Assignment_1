@@ -1,0 +1,23 @@
+<div *ngIf="currentUser">
+  <h2>Welcome, {{ currentUser.username }}!</h2>
+
+  <h3>Your Devices:</h3>
+  <div class="device-table">
+    <div class="device-row header">
+      <div class="device-cell">No.</div>
+      <div class="device-cell">Description</div>
+      <div class="device-cell">Address</div>
+      <div class="device-cell">Max Energy Hourly</div>
+    </div>
+
+    <div *ngFor="let device of devices; let i = index" class="device-row">
+      <div class="device-cell">{{ i + 1 }}</div>
+      <div class="device-cell">{{ device.description }}</div>
+      <div class="device-cell">{{ device.address }}</div>
+      <div class="device-cell">{{ device.maxEnergyHourly }}</div>
+    </div>
+  </div>
+
+  <button (click)="logout()">Logout</button>
+
+</div>

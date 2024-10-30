@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+
+  device_service:
+    build: .
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - springapimysql-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://DS2024_1_device_db:3306/DS2024_1_device_db?allowPublicKeyRetrieval=true
+    depends_on:
+      - DS2024_1_device_db
+    volumes:
+      - .m2:/root/.m2
+
+
+  DS2024_1_device_db:
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3308:3306
+    networks:
+      - springapimysql-net
+    environment:
+      MYSQL_DATABASE: DS2024_1_device_db
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: rootpass
+networks:
+  springapimysql-net:
