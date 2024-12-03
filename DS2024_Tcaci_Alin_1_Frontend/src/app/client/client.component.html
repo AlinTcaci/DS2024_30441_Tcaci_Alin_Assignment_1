@@ -8,6 +8,7 @@
       <div class="device-cell">Description</div>
       <div class="device-cell">Address</div>
       <div class="device-cell">Max Energy Hourly</div>
+      <div class="device-cell">Zctions</div>
     </div>
 
     <div *ngFor="let device of devices; let i = index" class="device-row">
@@ -15,8 +16,24 @@
       <div class="device-cell">{{ device.description }}</div>
       <div class="device-cell">{{ device.address }}</div>
       <div class="device-cell">{{ device.maxEnergyHourly }}</div>
+      <div class="device-cell">
+        <button (click)="getDeviceMonitorings(device.id)">Get data</button>
+      </div>
     </div>
   </div>
+
+  <div id="chartContainer" style="width: 100%; height: 400px;">
+    <!-- Date filter controls -->
+    <div>
+      <label for="filterDate">Filter by Date:</label>
+      <input id="filterDate" type="date" [(ngModel)]="selectedDate" />
+      <button (click)="filterByDate()">Filter</button>
+    </div>
+
+    <!-- Monitoring chart -->
+    <canvas #monitoringChart></canvas>
+  </div>
+
 
   <button (click)="logout()">Logout</button>
 

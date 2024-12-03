@@ -4,7 +4,9 @@ import ds2024.device.dtos.DeviceDTO;
 import ds2024.device.dtos.builder.DeviceBuilder;
 import ds2024.device.entity.Device;
 import ds2024.device.repository.DeviceRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,9 +20,15 @@ public class DeviceService {
 
     private final DeviceRepository deviceRepository;
 
-    @Autowired
-    public DeviceService(DeviceRepository deviceRepository) {
+    private final RabbitTemplate rabbitTemplate;
+
+
+    @Value("${spring.rabbitmq.name}")
+    private String limitsQueueName;
+
+    public DeviceService(DeviceRepository deviceRepository, RabbitTemplate rabbitTemplate) {
         this.deviceRepository = deviceRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<DeviceDTO> getAllDevices() {
@@ -47,6 +55,17 @@ public class DeviceService {
         Device device = DeviceBuilder.toEntity(deviceDTO);
         Device savedDevice = deviceRepository.save(device);
         DeviceBuilder.toDeviceDTO(savedDevice);
+
+        String jsonMessage = String.format(
+                "{\"device_id\": \"%s\", \"max_energy_hourly\": %f, \"user_id\": \"%s\"}",
+                savedDevice.getId(),
+                savedDevice.getMaxEnergyHourly(),
+                savedDevice.getUserId()
+        );
+
+        rabbitTemplate.convertAndSend(limitsQueueName, jsonMessage);
+        System.out.println("Message sent to queue: " + jsonMessage);
+
     }
 
     public void updateDeviceById(UUID id, DeviceDTO deviceDTO) {

@@ -8,7 +8,8 @@ import {Device} from '../../model/device/device.model';
 })
 export class DeviceService {
 
-  private apiUrl = 'http://localhost:8081/devices';
+  private apiUrl = 'http://device.localhost/devices';
+  // private apiUrl = 'http://localhost:8081/devices';
 
   constructor(private http : HttpClient) {}
 

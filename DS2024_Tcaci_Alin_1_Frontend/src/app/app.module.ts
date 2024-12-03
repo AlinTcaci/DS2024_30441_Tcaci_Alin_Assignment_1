@@ -23,6 +23,7 @@ import {InputTextModule} from 'primeng/inputtext';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     AppRoutingModule,
     PanelModule,
     ReactiveFormsModule,

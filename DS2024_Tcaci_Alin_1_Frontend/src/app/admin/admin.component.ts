@@ -36,7 +36,7 @@ export class AdminComponent implements OnInit{
     private userService: UserService,
     private deviceService: DeviceService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     this.newUserForm = this.fb.group({
       username: ['', Validators.required],
@@ -59,7 +59,7 @@ export class AdminComponent implements OnInit{
       this.loadAllDevices();
     } else {
       this.logout();
-      alert('User not logged in');
+      //alert('User not logged in');
     }
   }
 
