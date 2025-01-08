@@ -4,6 +4,7 @@ import ds2024.device.dtos.DeviceDTO;
 import ds2024.device.dtos.builder.DeviceBuilder;
 import ds2024.device.entity.Device;
 import ds2024.device.repository.DeviceRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

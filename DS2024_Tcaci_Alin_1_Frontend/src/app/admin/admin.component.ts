@@ -6,6 +6,7 @@ import {DeviceService} from '../service/device/device.service';
 import {Device} from '../model/device/device.model';
 import {AuthService} from '../service/auth/auth.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {EncryptionService} from '../service/encryption/encryption.service';
 
 @Component({
   selector: 'app-admin',
@@ -17,7 +18,7 @@ export class AdminComponent implements OnInit{
   newUserForm: FormGroup;
   newDeviceForm: FormGroup;
 
-  currentUser: User | null = null;
+  currentUser: User = new User();
   users: User[] = [];
   clientUsers: User[] = [];
   devices: Device[] = [];
@@ -36,6 +37,7 @@ export class AdminComponent implements OnInit{
     private userService: UserService,
     private deviceService: DeviceService,
     private router: Router,
+    private encryptionService: EncryptionService,
     private fb: FormBuilder,
   ) {
     this.newUserForm = this.fb.group({
@@ -53,14 +55,18 @@ export class AdminComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser();
-    if (this.currentUser) {
-      this.loadAllUsers();
-      this.loadAllDevices();
-    } else {
-      this.logout();
-      //alert('User not logged in');
+    this.currentUser.role = '';
+    if(this.encryptionService.decrypt(sessionStorage.getItem('userRole') as string) !== 'ADMIN'){
+      this.router.navigateByUrl('/login');
+      return;
     }
+
+    this.currentUser.id = this.encryptionService.decrypt(sessionStorage.getItem('userId') as string);
+    this.currentUser.username = this.encryptionService.decrypt(sessionStorage.getItem('username') as string);
+    this.currentUser.role = this.encryptionService.decrypt(sessionStorage.getItem('userRole') as string);
+
+    this.loadAllUsers();
+    this.loadAllDevices();
   }
 
   loadAllUsers(): void {
@@ -245,7 +251,10 @@ export class AdminComponent implements OnInit{
   }
 
   logout(): void {
-    this.authService.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  goToChat(): void {
+    this.router.navigate(['/chat']);
   }
 }

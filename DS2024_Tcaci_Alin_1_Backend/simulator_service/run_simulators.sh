@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array of UUIDs for devices
-DEVICE_IDS=("c61082c0-5329-4d1c-890f-2359ec976c8d" "e957cecd-63f9-4058-bb61-69c3af089cf3")
+DEVICE_IDS=("21f76961-34e1-4e8b-92ed-2cc1b9affea2" "e957cecd-63f9-4058-bb61-69c3af089cf3")
 JAR_PATH="target/simulator_service-1.0-SNAPSHOT.jar"
 PID_FILE="simulator_pids.txt"
 

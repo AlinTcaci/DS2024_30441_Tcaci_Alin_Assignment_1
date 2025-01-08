@@ -68,6 +68,26 @@ services:
       - "traefik.http.routers.monitoring_service.rule=Host(`monitoring.localhost`)"
       - "traefik.http.services.monitoring_service.loadbalancer.server.port=8082"
 
+  chat_service:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - shared-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://DS2024_3_chat:3306/DS2024_3_chat?allowPublicKeyRetrieval=true
+    depends_on:
+      - DS2024_3_chat
+    volumes:
+      - ~/.m2:/root/.m2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chat_service.rule=Host(`chat.localhost`)"
+      - "traefik.http.services.chat_service.loadbalancer.server.port=8083"
+
+
+
   reverse_proxy:
     image: traefik:v3.2
     command:
@@ -118,6 +138,18 @@ services:
       - shared-network
     environment:
       MYSQL_DATABASE: DS2024_2_monitoring_db
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: rootpass
+
+  DS2024_3_chat:
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3310:3306
+    networks:
+      - shared-network
+    environment:
+      MYSQL_DATABASE: DS2024_3_chat
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: rootpass
 

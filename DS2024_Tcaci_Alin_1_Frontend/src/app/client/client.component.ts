@@ -11,6 +11,7 @@ import {Chart, ChartConfiguration, registerables} from 'chart.js';
 import {Monitoring} from '../model/monitor/monitoring.model';
 import {MonitoringService} from '../service/monitor/monitoring.service';
 import 'chartjs-adapter-date-fns'; // Add this import
+import { EncryptionService } from '../service/encryption/encryption.service';
 
 @Component({
   selector: 'app-client',
@@ -26,10 +27,12 @@ export class ClientComponent implements OnInit, AfterViewInit{
     private deviceService: DeviceService,
     private router: Router,
     private webSocketService: WebSocketService,
-    private monitoringService: MonitoringService
+    private monitoringService: MonitoringService,
+    private encryptionService: EncryptionService
   ) {}
 
-  currentUser: User | null = null;
+  currentUser: User = new User();
+  userId = '';
   devices: Device[] = [];
   energyConsumption: Monitoring[] = [];
 
@@ -38,24 +41,44 @@ export class ClientComponent implements OnInit, AfterViewInit{
 
 
   ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser();
-    console.log(this.currentUser);
-    // this.getAllMonitorings();
-    this.webSocketService.connect('ws://monitoring.localhost/notifications');
-    this.webSocketService.getMessages().subscribe((rawMessage) => {
-      const message = typeof rawMessage === 'string' ? JSON.parse(rawMessage) : rawMessage;
-
-      if (message.user_id === this.currentUser?.id) {
-        alert('Alert: Message for you!\nDeviceId: ' + message.device_id);
+    if (typeof window !== 'undefined') {
+      const userRole = sessionStorage.getItem('userRole');
+      if (this.encryptionService.decrypt(userRole as string) !== 'CLIENT') {
+        this.router.navigateByUrl('/login');
+        return;
       }
-      console.log(message);
-    });
-    if (this.currentUser) {
-      this.loadUserDevices(this.currentUser.id);
+
+      if (sessionStorage.getItem('userId') !== null) {
+        this.userId = this.encryptionService.decrypt(sessionStorage.getItem('userId') as string);
+        this.currentUser.username = this.encryptionService.decrypt(sessionStorage.getItem('username') as string);
+        this.currentUser.id = this.userId;
+      }
+
+      console.log(this.userId);
+      // this.getAllMonitorings();
+      this.webSocketService.connect('ws://monitoring.localhost/notifications');
+      this.webSocketService.getMessages().subscribe((rawMessage) => {
+        const message = typeof rawMessage === 'string' ? JSON.parse(rawMessage) : rawMessage;
+
+        if (message.user_id === this.userId) {
+          alert('Alert: Message for you!\nDeviceId: ' + message.device_id);
+        }
+        console.log(message);
+      });
+
+      this.loadUserDevices(this.userId);
     } else {
+      console.warn('Session storage is unavailable in this environment.');
       this.logout();
-      alert('User not logged in');
     }
+
+
+    // if (this.currentUser) {
+    //   this.loadUserDevices(this.currentUser.id);
+    // } else {
+    //   this.logout();
+    //   alert('User not logged in');
+    // }
   }
 
   loadUserDevices(userId: string): void {
@@ -71,14 +94,19 @@ export class ClientComponent implements OnInit, AfterViewInit{
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.initializeChart();
-    });
+    if (typeof window !== 'undefined' && this.monitoringChart) {
+      setTimeout(() => {
+        this.initializeChart();
+      });
+    } else {
+      console.warn('DOM is not available. Chart initialization skipped.');
+    }
   }
 
 
+
   logout(): void {
-    this.authService.logout();
+    sessionStorage.clear();
     this.router.navigateByUrl('/login');
   }
 
@@ -192,4 +220,7 @@ export class ClientComponent implements OnInit, AfterViewInit{
   }
 
 
+  goToChat(): void {
+    this.router.navigate(['/chat']);
+  }
 }

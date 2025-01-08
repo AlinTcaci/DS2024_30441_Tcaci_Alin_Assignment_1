@@ -197,15 +197,15 @@ public class RabbitMQConfig {
         return factory;
     }
 
-//    // Queue limits
-//    @Bean
-//    public Queue queue1() {
-//        return new Queue(queue1Name, true); // Durable queue
-//    }
-//
-//    // Queue monitoring
-//    @Bean
-//    public Queue queue2() {
-//        return new Queue(queue2Name, true); // Durable queue
-//    }
+    // Queue limits
+    @Bean
+    public Queue queue1() {
+        return new Queue(queue1Name, true); // Durable queue
+    }
+
+    // Queue monitoring
+    @Bean
+    public Queue queue2() {
+        return new Queue(queue2Name, true); // Durable queue
+    }
 }

@@ -1,6 +1,7 @@
 package ds2024.user.controller;
 
 import ds2024.user.dtos.UserDTO;
+import ds2024.user.entity.User;
 import ds2024.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,5 +57,15 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
         UserDTO user = userService.getUserByUsername(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User user) {
+        String token = userService.authenticate(user);
+        if (token != null) {
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+        }
     }
 }

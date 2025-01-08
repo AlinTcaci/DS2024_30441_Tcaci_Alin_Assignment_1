@@ -11,6 +11,11 @@ export class MonitoringService {
   private apiUrl = 'http://monitoring.localhost/monitor';
   // private apiUrl = 'http://localhost:8082/monitor';
 
+  private token: string | null = null;
+
+  setToken(token: string): void {
+    this.token = token;
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -25,7 +30,13 @@ export class MonitoringService {
 
   getAllMonitoringsByDeviceId(deviceId: string): Observable<Monitoring[]> {
     const url = `${this.apiUrl}`+'/getAllMonitoringsByDeviceId/'+deviceId;
-    return this.http.get<Monitoring[]>(url).pipe(
+    return this.http.get<Monitoring[]>(url,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         alert('Monitorings not found');
         return throwError(() => new Error(error));})
@@ -50,10 +61,5 @@ export class MonitoringService {
         return throwError(() => new Error(error));})
     );
   }
-
-
-
-
-
 
 }

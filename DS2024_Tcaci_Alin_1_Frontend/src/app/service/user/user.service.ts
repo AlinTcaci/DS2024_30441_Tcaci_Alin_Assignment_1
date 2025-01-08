@@ -9,13 +9,25 @@ import {HttpClient} from '@angular/common/http';
 export class UserService {
 
   private apiUrl = 'http://user.localhost/users';
-  // private apiUrl = 'http://localhost:8080/users';
+  //   private apiUrl = 'http://localhost:8080/users';
+
+  private token: string | null = null;
+
+  setToken(token: string): void {
+    this.token = token;
+  }
 
   constructor(private http : HttpClient) {}
 
   getUserByUsername(username: string): Observable<User> {
     const url = `${this.apiUrl}`+'/getUserByUsername/'+`${username}`;
-    return this.http.get<User>(url).pipe(
+    return this.http.get<User>(url,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        }
+      }).pipe(
       catchError((error: any) => {
         alert('User not found');
         return throwError(() => new Error(error));})
@@ -23,17 +35,31 @@ export class UserService {
   }
 
   getAllUsers(): Observable<User[]> {
+    console.log('Token:', this.token);
     const url = `${this.apiUrl}`+'/getAllUsers';
-    return this.http.get<User[]>(url).pipe(
-      catchError((error: any) => {
-        alert('Users not found');
-        return throwError(() => new Error(error));})
-    );
+    return this.http.get<User[]>(url,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      });
+    //   .pipe(
+    //   catchError((error: any) => {
+    //     alert('Users not found');
+    //     return throwError(() => new Error(error));})
+    // );
   }
 
   createUser(user: User): Observable<any> {
     const url = `${this.apiUrl}/createUser`;
-    return this.http.post(url, user, { responseType: 'text' }).pipe(
+    return this.http.post(url, user,
+      { responseType: 'text',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error in createUser:', error);
         const errorMessage = error.error || 'Failed to create user';
@@ -44,7 +70,13 @@ export class UserService {
 
   deleteUserById(id: string): Observable<any> {
     const url = `${this.apiUrl}/deleteUserById/${id}`;
-    return this.http.delete(url, { responseType: 'text' }).pipe(
+    return this.http.delete(url,
+      { responseType: 'text',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error deleting user:', error);
         const errorMessage = error.error || 'Failed to delete user';
@@ -55,7 +87,13 @@ export class UserService {
 
   updateUserById(id: string, user: User): Observable<any> {
     const url = `${this.apiUrl}/updateUserById/${id}`;
-    return this.http.put(url, user, { responseType: 'text' }).pipe(
+    return this.http.put(url, user,
+      { responseType: 'text',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error updating user:', error);
         const errorMessage = error.error || 'Failed to update user';

@@ -4,6 +4,7 @@ import ds2024.user.dtos.UserDTO;
 import ds2024.user.dtos.builder.UserBuilder;
 import ds2024.user.entity.User;
 import ds2024.user.repository.UserRepository;
+import ds2024.user.security.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -69,5 +73,19 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return UserBuilder.toUserDTO(user);
+    }
+
+    public User findByUserName(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+
+    public String authenticate(User userDTO) {
+        User user = userRepository.findByUsername(userDTO.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
+        if(user != null && (user.getPassword().equals(userDTO.getPassword()))) {
+            return jwtUtil.generateToken(user.getUsername());
+        }
+        return null;
     }
 }

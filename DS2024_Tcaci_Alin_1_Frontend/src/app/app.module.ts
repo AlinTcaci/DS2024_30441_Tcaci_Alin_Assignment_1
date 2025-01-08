@@ -13,13 +13,15 @@ import {ClientComponent} from './client/client.component';
 import { AdminComponent } from './admin/admin.component';
 import {TableModule} from 'primeng/table';
 import {InputTextModule} from 'primeng/inputtext';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     ClientComponent,
-    AdminComponent
+    AdminComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,90 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-box {
+  display: flex;
+  margin-top: 10px;
+}
+
+.input-box input {
+  flex: 1;
+  padding: 10px;
+}
+
+.input-box button {
+  padding: 10px;
+  margin-left: 10px;
+}
+
+.messages {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.message-container {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.sent {
+  align-self: flex-end;
+  background-color: #d0f0c0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.received {
+  align-self: flex-start;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.read-status {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.read-status .seen {
+  color: green;
+  font-weight: bold;
+}
+
+.read-status .unseen {
+  color: gray;
+}
+
+.typing-notification {
+  font-style: italic;
+  color: gray;
+  margin-bottom: 10px; /* Spacing from other elements */
+  height: 20px; /* Fixed height to reserve space */
+  line-height: 20px; /* Center align text vertically */
+  visibility: hidden; /* Default state: hidden */
+  //transition: opacity 0.3s ease; /* Smooth fade-in/out */
+}
+
+.typing-notification.active {
+  visibility: visible; /* Show when active */
+  opacity: 1; /* Fully visible */
+}
+
+.typing-notification.inactive {
+  opacity: 0; /* Fade out */
+}

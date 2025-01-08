@@ -1,0 +1,57 @@
+<div class="chat-container">
+  <h2>Chat</h2>
+
+  <!-- Receiver Dropdown -->
+  <div class="input-group">
+    <label for="receiver">Receiver:</label>
+    <select id="receiver" [(ngModel)]="receiver" (change)="onReceiverChange()">
+      <option *ngIf="isAdmin" value="All">All</option> <!-- "All" option for Admin users -->
+      <option *ngFor="let user of users" [value]="user.username">{{ user.username }}</option>
+    </select>
+  </div>
+
+  <div
+    class="typing-notification"
+    [class.active]="typingNotification"
+    [class.inactive]="!typingNotification"
+  >
+    {{ typingNotification }}
+  </div>
+
+
+
+  <!-- Messages -->
+  <div class="chat-box">
+    <div class="messages">
+      <div
+        *ngFor="let message of messages"
+        [ngClass]="{ 'sent': message.sender === sender, 'received': message.sender !== sender }"
+        class="message-container"
+      >
+        <div class="message-content">
+          <strong>{{ message.sender }}:</strong>
+          <span>{{ message.content }}</span>
+        </div>
+        <small>{{ formatDate(message.timestamp) }}</small>
+
+        <!-- Real-time Read Status -->
+        <div *ngIf="message.sender === sender" class="read-status">
+          <span *ngIf="message.readStatus" class="seen">Seen</span>
+          <span *ngIf="!message.readStatus" class="unseen">Delivered</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Typing and Sending -->
+  <div class="input-box">
+    <input
+      type="text"
+      [(ngModel)]="messageContent"
+      (input)="notifyTyping()"
+      placeholder="Type your message..."
+    />
+    <button [disabled]="!messageContent.trim()" (click)="sendMessage()">Send</button>
+  </div>
+</div>

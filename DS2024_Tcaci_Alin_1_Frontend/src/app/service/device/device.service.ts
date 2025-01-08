@@ -9,13 +9,25 @@ import {Device} from '../../model/device/device.model';
 export class DeviceService {
 
   private apiUrl = 'http://device.localhost/devices';
-  // private apiUrl = 'http://localhost:8081/devices';
+  //  private apiUrl = 'http://localhost:8081/devices';
+
+   private token: string | null = null;
+
+   setToken(token: string): void {
+      this.token = token;
+   }
 
   constructor(private http : HttpClient) {}
 
   getAllDevices(): Observable<Device[]> {
     const url = `${this.apiUrl}`+'/getAllDevices';
-    return this.http.get<Device[]>(url).pipe(
+    return this.http.get<Device[]>(url,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         alert('Devices not found');
         return throwError(() => new Error(error));})
@@ -24,7 +36,13 @@ export class DeviceService {
 
   getDevicesByUserId(userId: string): Observable<Device[]> {
     const url = `${this.apiUrl}`+'/getAllDevicesByUserId/'+userId;
-    return this.http.get<Device[]>(url).pipe(
+    return this.http.get<Device[]>(url,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         alert('Devices not found');
         return throwError(() => new Error(error));})
@@ -33,7 +51,13 @@ export class DeviceService {
 
   createDevice(device: Device): Observable<any> {
     const url = `${this.apiUrl}/createDevice`;
-    return this.http.post(url, device, { responseType: 'text'}).pipe(
+    return this.http.post(url, device,
+      { responseType: 'text',
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error in createDevice:', error);
         const errorMessage = error.error || 'Failed to create device';
@@ -44,7 +68,14 @@ export class DeviceService {
 
   deleteDeviceById(id: string): Observable<any> {
     const url = `${this.apiUrl}/deleteDeviceById/${id}`;
-    return this.http.delete(url, { responseType: 'text' }).pipe(
+    return this.http.delete(url,
+      {
+        responseType: 'text',
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error deleting device:', error);
         const errorMessage = error.error || 'Failed to delete device';
@@ -55,7 +86,14 @@ export class DeviceService {
 
   deleteAllDevicesByUserId(userId: string): Observable<any> {
     const url = `${this.apiUrl}/deleteAllDevicesByUserId/${userId}`;
-    return this.http.delete(url, { responseType: 'text' }).pipe(
+    return this.http.delete(url,
+      {
+        responseType: 'text',
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error deleting users devices:', error);
         const errorMessage = error.error || 'Failed to delete users devices';
@@ -66,7 +104,14 @@ export class DeviceService {
 
   updateDeviceById(id: string, device: Device): Observable<any> {
     const url = `${this.apiUrl}/updateDeviceById/${id}`;
-    return this.http.put(url, device, { responseType: 'text' }).pipe(
+    return this.http.put(url, device,
+      {
+        responseType: 'text',
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).pipe(
       catchError((error: any) => {
         console.error('Error updating device:', error);
         const errorMessage = error.error || 'Failed to update device';
